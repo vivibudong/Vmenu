@@ -68,11 +68,13 @@ Contributions are welcome!
 
 ---
 
-## Declaration
-This project is licensed under the [MIT License](LICENSE), allowing free use, modification, and distribution with proper attribution.
+**License**
 
-**Made with ❤️ by [Vivi不懂]**
+This project is licensed under the [MIT License](LICENSE), allowing free use, modification, and distribution with proper attribution.
 
 **Contact**
 
 For issues or suggestions, open an issue on GitHub or reach out via email: budongkejivivi@gmail.com
+
+<div align="center"> <strong>Made with ❤️ by <a href="https://github.com/vivibudong">Vivi不懂</a></strong> </div>
+
