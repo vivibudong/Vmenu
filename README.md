@@ -56,7 +56,9 @@ For issues or suggestions, open an issue on GitHub or reach out via email: budon
 This project is licensed under the [MIT License](LICENSE), allowing free use, modification, and distribution with proper attribution.  
 **Acknowledgements**:  
 
-- 
+ [Speedtest](https://github.com/sivel/speedtest-cli) 
+ [NodeQuality](https://github.com/LloydAsp/NodeQuality) 
+
 ---
 
 **Made with ❤️ by [Vivi不懂]**
