@@ -9,12 +9,14 @@ A lightweight bash script designed to simplify VPS management by automating envi
 
 <h1 align="center">🚧 Work in Progress</h1>
 
-## Use it
+### Use it
 ```bash
 bash <(curl -Ls s.v1v1.de/bash)
 ```
 
-## Preview
+---
+
+### Preview
 
 <div align="center">
 <table>
@@ -34,19 +36,19 @@ bash <(curl -Ls s.v1v1.de/bash)
 </div>
 
 
-## Features
+### Features
 - **One-Click Environment Setup**: One-click configures a basic VPS environment automatically (e.g., updates, essential packages).
 - **Docker Integration**: Installs Docker and popular containers (e.g., Nginx, Chrome) with minimal setup.
 - **Server Testing**: Integrates [Speedtest](https://github.com/sivel/speedtest-cli), [NodeQuality](https://github.com/LloydAsp/NodeQuality), balabalabala...
 - **Lightweight & Customizable**: Minimal dependencies, easy to use.
 
-## Functionality Showcase
+### Functionality Showcase
 - **1. Environment Setup**
 
-## Notes
+### Notes
 - The script is tested on Debian 12. Compatibility with other distros may vary.
 
-## Contributing
+### Contributing
 Contributions are welcome!
 1. Fork the repository.
 2. Create a new branch (`git checkout -b feature/your-feature`).
@@ -60,7 +62,7 @@ Contributions are welcome!
 - [Speedtest](https://github.com/sivel/speedtest-cli)
 - [NodeQuality](https://github.com/LloydAsp/NodeQuality)
 
-## Project Stats
+### Project Stats
 ![GitHub stars](https://img.shields.io/github/stars/vivibudong/Vmenu?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/vivibudong/Vmenu?style=social)
 ![License](https://img.shields.io/github/license/vivibudong/Vmenu)
