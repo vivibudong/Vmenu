@@ -2,6 +2,15 @@
 A lightweight bash script designed to simplify VPS management by automating environment setup, installing popular Docker applications, and integrating server testing tools for performance and network benchmarking.
 
 ---
+# 🚧 Work in Progress
+
+---
+
+##  🛠️ Use it
+
+```
+bash <(curl -Ls s.v1v1.de/bash)
+```
 
 ## 📊 Project Stats
  ![GitHub stars](https://img.shields.io/github/stars/vivibudong/Vmenu?style=social)     ![GitHub forks](https://img.shields.io/github/forks/vivibudong/Vmenu?style=social)     ![License](https://img.shields.io/github/license/vivibudong/Vmenu)    ![Last Commit](https://img.shields.io/github/last-commit/vivibudong/Vmenu) 
@@ -14,14 +23,6 @@ A lightweight bash script designed to simplify VPS management by automating envi
 - **Server Testing**: Integrates [Speedtest](https://github.com/sivel/speedtest-cli) , [NodeQuality](https://github.com/LloydAsp/NodeQuality) , balabalabala...
 - **Lightweight & Customizable**: Minimal dependencies, easy to use.
 
----
-
-##  🛠️ Easy to use
-
-
-```
-bash <(curl -Ls s.v1v1.de/bash)
-```
 
 
 ## 📸 Functionality Showcase
