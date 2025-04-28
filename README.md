@@ -26,7 +26,8 @@ A lightweight bash script designed to simplify VPS management by automating envi
 ### Easy to use
 
 
-```bash <(curl -Ls s.v1v1.de/bash)
+```
+bash <(curl -Ls s.v1v1.de/bash)
 ```
 
 
