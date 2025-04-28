@@ -4,26 +4,19 @@ A lightweight bash script designed to simplify VPS management by automating envi
 ---
 
 ## 📊 Project Stats
-| ![GitHub stars](https://img.shields.io/github/stars/vivibudong/Vmenu?style=social) | ![GitHub forks](https://img.shields.io/github/forks/vivibudong/Vmenu?style=social) | ![License](https://img.shields.io/github/license/vivibudong/Vmenu) | ![Last Commit](https://img.shields.io/github/last-commit/vivibudong/Vmenu) |
+ ![GitHub stars](https://img.shields.io/github/stars/vivibudong/Vmenu?style=social)     ![GitHub forks](https://img.shields.io/github/forks/vivibudong/Vmenu?style=social)     ![License](https://img.shields.io/github/license/vivibudong/Vmenu)    ![Last Commit](https://img.shields.io/github/last-commit/vivibudong/Vmenu) 
 
 ---
 
 ## 🚀 Features
 - **One-Click Environment Setup**:One-click configures a basic VPS environment automatically (e.g., updates, essential packages).  
 - **Docker Integration**: Installs Docker and popular containers (e.g., Nginx, Chrome) with minimal setup.  
-- **Server Testing**: Integrates [Speedtest](https://github.com/sivel/speedtest-cli) , [NodeQuality](https://github.com/LloydAsp/NodeQuality)
+- **Server Testing**: Integrates [Speedtest](https://github.com/sivel/speedtest-cli) , [NodeQuality](https://github.com/LloydAsp/NodeQuality) , balabalabala...
 - **Lightweight & Customizable**: Minimal dependencies, easy to use.
 
 ---
 
-## 🛠️ Usage Tutorial
-
-### Prerequisites
-- 
-
-
-
-### Easy to use
+##  🛠️ Easy to use
 
 
 ```
