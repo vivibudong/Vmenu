@@ -553,7 +553,7 @@ process_submenu_2_choice() {
                 execute_command "mkdir -p /root/docker/libretv/data && docker run -d --name temp_libretv bestzwei/libretv:latest && sleep 5 && docker cp temp_libretv:/usr/share/nginx/html/. /root/docker/libretv/data/ && chmod -R 755 /root/docker/libretv/data && docker stop temp_libretv && docker rm temp_libretv && cd /root/docker/libretv && echo -e \"version: '3'\nservices:\n  libretv:\n    image: bestzwei/libretv:latest\n    container_name: libretv\n    ports:\n      - '$custom_port:80'\n    volumes:\n      - /root/docker/libretv/data:/usr/share/nginx/html\n    restart: unless-stopped\" > docker-compose.yml && docker-compose up -d" "LibreTV 安装，端口:$custom_port"
             fi
             echo -e "\n${GREEN}1 秒后自动返回子菜单...${NC}"
-            echo -e "\n${GREEN}浏览器访问 http://$server_ip:PORT(默认为http://$server_ip:18899) 即可打开LibreTV,强烈建议使用NP进行反代！ ${NC}"
+            echo -e "\n${GREEN}浏览器访问 http://$server_ip:$custom_port$ (默认为http://$server_ip:18899) 即可打开LibreTV,强烈建议使用NP进行反代！ ${NC}"
 
             sleep 1
             show_submenu_2
