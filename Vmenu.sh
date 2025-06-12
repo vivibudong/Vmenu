@@ -374,7 +374,7 @@ show_submenu_2() {
     echo -e "${BORDER}│${NC}   ${GREEN}[207]${NC} 浏览器Firefox    "
     echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"   
     echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${RED}[999]${NC} *一键删除所有容器及镜像*   ${BORDER}${NC}" 
+    echo -e "${BORDER}│${NC}   ${RED}[999]${NC} *一键删除所有容器及镜像* 慎用   ${BORDER}${NC}" 
     echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
     echo -e "${BORDER}│${NC}   ${GREEN}[0]${NC} 返回主菜单                                           "
     echo -e ""
@@ -399,7 +399,7 @@ process_submenu_2_choice() {
 
         999)
         #清理docker
-            execute_command "docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi -f $(docker images -q)" "停止、删除所有容器及镜像"
+            execute_command "docker ps -aq | xargs -r docker stop && docker ps -aq | xargs -r docker rm && docker images -q | sort -u | xargs -r docker rmi -f" "停止、删除所有容器及镜像"
             echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
             sleep 1
             show_submenu_2
