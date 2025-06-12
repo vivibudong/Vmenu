@@ -542,19 +542,70 @@ process_submenu_2_choice() {
         205)
         #Docker安装------LibreTV
             check_docker
-            echo -e "${YELLOW}设置 LibreTV 端口 [回车默认 18899]:${NC} "
+            
+            echo -e "${YELLOW}是否需要设置网站密码和管理员密码？${NC}"
+            echo -e "${YELLOW}1) 设置*强烈建议${NC}"
+            echo -e "${YELLOW}2) 不设置${NC}"
+            if [ -t 0 ]; then
+                read -r password_choice
+                password_choice=${password_choice:-2}
+            else
+                password_choice=2
+                echo -e "${YELLOW}非交互式环境，默认不设置密码${NC}"
+            fi
+            
+            # 根据选择处理密码
+            password_env=""
+            if [ "$password_choice" = "1" ]; then
+                echo -e "${YELLOW}设置网站访问密码 [回车默认 budongkeji.cc]:${NC} "
+                if [ -t 0 ]; then
+                    read -r user_password
+                    user_password=${user_password:-budongkeji.cc}
+                else
+                    user_password="budongkeji.cc"
+                fi
+                
+                echo -e "${YELLOW}设置管理员密码 [回车默认 budongkeji.cc]:${NC} "
+                if [ -t 0 ]; then
+                    read -r admin_password
+                    admin_password=${admin_password:-budongkeji.cc}
+                else
+                    admin_password="budongkeji.cc"
+                fi
+                
+                password_env="-e PASSWORD=$user_password -e ADMINPASSWORD=$admin_password"
+                echo -e "${GREEN}已设置密码 - 访问: $user_password, 管理员: $admin_password${NC}"
+            else
+                echo -e "${GREEN}选择不设置密码${NC}"
+            fi
+            
+            # 设置端口
+            echo -e "${YELLOW}设置访问端口 [回车默认 18899]:${NC} "
             if [ -t 0 ]; then
                 read -r custom_port
                 custom_port=${custom_port:-18899}
-                execute_command "mkdir -p /root/docker/libretv/data && docker run -d --name temp_libretv bestzwei/libretv:latest && sleep 5 && docker cp temp_libretv:/usr/share/nginx/html/. /root/docker/libretv/data/ && chmod -R 755 /root/docker/libretv/data && docker stop temp_libretv && docker rm temp_libretv && cd /root/docker/libretv && echo -e \"version: '3'\nservices:\n  libretv:\n    image: bestzwei/libretv:latest\n    container_name: libretv\n    ports:\n      - '$custom_port:80'\n    volumes:\n      - /root/docker/libretv/data:/usr/share/nginx/html\n    restart: unless-stopped\" > docker-compose.yml && docker-compose up -d" "LibreTV 安装，端口:$custom_port"
             else
                 custom_port=18899
                 echo -e "${YELLOW}非交互式环境，使用默认端口 $custom_port${NC}"
-                execute_command "mkdir -p /root/docker/libretv/data && docker run -d --name temp_libretv bestzwei/libretv:latest && sleep 5 && docker cp temp_libretv:/usr/share/nginx/html/. /root/docker/libretv/data/ && chmod -R 755 /root/docker/libretv/data && docker stop temp_libretv && docker rm temp_libretv && cd /root/docker/libretv && echo -e \"version: '3'\nservices:\n  libretv:\n    image: bestzwei/libretv:latest\n    container_name: libretv\n    ports:\n      - '$custom_port:80'\n    volumes:\n      - /root/docker/libretv/data:/usr/share/nginx/html\n    restart: unless-stopped\" > docker-compose.yml && docker-compose up -d" "LibreTV 安装，端口:$custom_port"
             fi
+            
+            # 执行安装
+            if [ "$password_choice" = "1" ]; then
+                execute_command "docker run -d --name libretv --restart unless-stopped -p $custom_port:8080 $password_env bestzwei/libretv:latest" "LibreTV 安装，端口:$custom_port，已设置密码"
+            else
+                execute_command "docker run -d --name libretv --restart unless-stopped -p $custom_port:8080 bestzwei/libretv:latest" "LibreTV 安装，端口:$custom_port，无密码"
+            fi
+            
             echo -e "\n${GREEN}1 秒后自动返回子菜单...${NC}"
-            echo -e "\n${GREEN}浏览器访问 http://$server_ip:$custom_port$ (默认为http://$server_ip:18899) 即可打开LibreTV,强烈建议使用NP进行反代！ ${NC}"
-
+            if [ "$password_choice" = "1" ]; then
+                echo -e "\n${GREEN}浏览器访问 http://$server_ip:$custom_port 即可打开LibreTV${NC}"
+                echo -e "\n${GREEN}网站密码: $user_password${NC}"
+                echo -e "\n${GREEN}管理员密码: $admin_password${NC}"
+                echo -e "\n${GREEN}强烈建议使用NP进行反代！${NC}"
+            else
+                echo -e "\n${GREEN}浏览器访问 http://$server_ip:$custom_port (默认为http://$server_ip:18899) 即可打开，强烈建议使用NP进行反代！${NC}"
+            fi
+            
             sleep 1
             show_submenu_2
             ;;
