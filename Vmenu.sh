@@ -191,7 +191,6 @@ show_main_menu() {
     echo -e "${RED}│${NC}   ${GREEN}[0]${NC} ${WHITE}退出脚本${NC}"
     echo -e "${RED}│${NC}"
     echo -e "${RED}=============================================${NC}"
-}
 
     # 运行次数
     echo -e "\n${BLUE}→ 脚本总计运行: - 次${NC}\n"
@@ -262,7 +261,6 @@ show_submenu_1() {
     echo -e "${RED}│${NC}   ${GREEN}[0]${NC} ${WHITE}返回主菜单${NC}"
     echo -e "${RED}│${NC}"
     echo -e "${RED}=============================================${NC}"
-}
 
     echo -e "\n${YELLOW}请输入选项号码:${NC} "
     
@@ -274,6 +272,7 @@ show_submenu_1() {
         exit 0
     fi
 }
+
 
 #菜单1选择
 process_submenu_1_choice() {
