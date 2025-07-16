@@ -487,11 +487,17 @@ process_submenu_2_choice() {
             check_docker
             if [ $? -eq 0 ]; then
                 execute_command "apt update -y && apt upgrade -y && mkdir -p /root/docker/vertex && chmod 777 /root/docker/vertex && docker run -d --name vertex --restart unless-stopped --network host -v /root/docker/vertex:/vertex -e TZ=Asia/Shanghai lswl/vertex:stable && apt install sudo -y && sudo apt install qbittorrent-nox -y && echo -e \"[Unit]\nDescription=qBittorrent Command Line Client\nAfter=network.target\n\n[Service]\nExecStart=/usr/bin/qbittorrent-nox --webui-port=8080\nUser=root\nRestart=always\nRestartSec=10s\nStartLimitInterval=60s\nStartLimitBurst=5\n\n[Install]\nWantedBy=multi-user.target\" | sudo tee /etc/systemd/system/qbittorrent.service > /dev/null && sudo systemctl daemon-reload && sudo systemctl start qbittorrent && sudo systemctl enable qbittorrent && docker ps && systemctl list-units --type=service --state=running" "VT+QB安装"
-                echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
-                echo -e "\n${GREEN}Vertex默认账户：admin | 查询默认密码：more /root/docker/vertex/data/password ${NC}"
-                echo -e "\n${GREEN}Qbit默认账户：admin | 默认密码：adminadmin ${NC}"
-                sleep 1
             fi
+            echo -e "\n${GREEN}================================${NC}"
+            echo -e "${GREEN}最新版Vertex安装完成！${NC}"
+            echo -e "${GREEN}访问地址: http://$server_ip:3000${NC}"
+            echo -e "\n${GREEN}默认账户：admin | 查询默认密码：more /root/docker/vertex/data/password ${NC}"
+            echo -e "${GREEN}最新版Qbit安装完成！${NC}"
+            echo -e "${GREEN}访问地址: http://$server_ip:8080${NC}"
+            echo -e "\n${GREEN}默认账户：admin | 默认密码：adminadmin ${NC}"
+            echo -e "${GREEN}================================${NC}"
+            echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
+            sleep 1
             show_submenu_2
             ;;
 
@@ -552,12 +558,17 @@ process_submenu_2_choice() {
             
             if [ "$CHOICE" -eq 1 ]; then
                     execute_command "bash <(wget -qO- https://raw.githubusercontent.com/jerry048/Dedicated-Seedbox/main/Install.sh) -u admin -p budongkeji.cc -c ${QB_CACHE_SIZE} -q ${QB_VERSION} -l ${LT_VERSION} ${VERTEX_OPTION} -x" "Jerry大佬的Dedicated-Seedbox安装"
-                    echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
-                    echo -e "\n${GREEN}Qbit的默认账户：admin | 默认密码：budongkeji.cc ${NC}"
+                    
+                    echo -e "\n${GREEN}================================${NC}"
+                    echo -e "${GREEN}Qbit访问地址: http://$server_ip:8080${NC}"
+                    echo -e "\n${GREEN}默认账户：admin | 默认密码：budongkeji.cc ${NC}"
                     if [ "$INSTALL_VERTEX" -eq 1 ]; then
-                        echo -e "\n${GREEN}Vt的默认账户：admin | 默认密码：budongkeji.cc ${NC}"
+                        echo -e "${GREEN}VT访问地址: http://$server_ip:3000${NC}"
+                        echo -e "\n${GREEN}默认账户：admin | 默认密码：budongkeji.cc ${NC}"
                     fi
-                    echo -e "\n${GREEN}请输入reboot，重启小鸡使配置生效。 ${NC}"
+                    echo -e "\n${GREEN}================================${NC}"
+                    echo -e "\n${GREEN}请执行reboot，重启服务器使配置生效。 ${NC}"
+                    echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
                     sleep 1
             elif [ "$CHOICE" -eq 2 ]; then
                 # 重新设置
@@ -628,15 +639,20 @@ process_submenu_2_choice() {
                 execute_command "docker run -d --name libretv --restart unless-stopped -p $custom_port:8080 bestzwei/libretv:latest" "LibreTV 安装，端口:$custom_port，无密码"
             fi
             
-            echo -e "\n${GREEN}1 秒后自动返回子菜单...${NC}"
             if [ "$password_choice" = "1" ]; then
+                echo -e "\n${GREEN}================================${NC}"
                 echo -e "\n${GREEN}浏览器访问 http://$server_ip:$custom_port 即可打开LibreTV${NC}"
                 echo -e "\n${GREEN}网站密码: $user_password${NC}"
                 echo -e "\n${GREEN}管理员密码: $admin_password${NC}"
-                echo -e "\n${GREEN}强烈建议使用NP进行反代！${NC}"
+                echo -e "\n${GREEN}强烈建议使用NPM进行反代！${NC}"
+                echo -e "\n${GREEN}================================${NC}"
             else
-                echo -e "\n${GREEN}浏览器访问 http://$server_ip:$custom_port (默认为http://$server_ip:18899) 即可打开，强烈建议使用NP进行反代！${NC}"
+                echo -e "\n${GREEN}================================${NC}"
+                echo -e "\n${GREEN}浏览器访问 http://$server_ip:$custom_port 即可打开LibreTV${NC}"
+                echo -e "\n${GREEN}强烈建议使用NPM进行反代！${NC}"
+                echo -e "\n${GREEN}================================${NC}"
             fi
+            echo -e "\n${GREEN}1 秒后自动返回子菜单...${NC}"
             
             sleep 1
             show_submenu_2
@@ -663,10 +679,15 @@ process_submenu_2_choice() {
             fi
             
             execute_command "mkdir -p /root/docker/kasmweb && cd /root/docker/kasmweb && echo -e \"version: '3.8'\nservices:\n  chrome:\n    image: kasmweb/chrome:1.16.0\n    shm_size: 512m\n    ports:\n      - '$kasm_port:6901'\n    environment:\n      - VNC_PW=$kasm_password\n    restart: unless-stopped\" > docker-compose.yml && docker-compose up -d" "KasmWeb Chrome 安装，端口:$kasm_port ，密码$kasm_password "
-            echo -e "\n${GREEN}1 秒后自动返回子菜单...${NC}"
+
+            echo -e "\n${GREEN}================================${NC}"
             echo -e "\n${GREEN}浏览器访问 https://$server_ip:$kasm_port 即可打开 KasmWeb Chrome ${NC}"
-            echo -e "\n${RED}注意：请访问https！！！默认账户：kasm_user  默认密码 $kasm_password${NC}"
+            echo -e "\n${RED}默认账户：kasm_user  默认密码 $kasm_password${NC}"
             echo -e "\n${RED}用前须知：如果长期使用，请配置SSL证书确保数据安全！！！${NC}"
+            echo -e "\n${GREEN}强烈建议使用NPM进行反代！${NC}"
+            echo -e "\n${GREEN}================================${NC}"
+            echo -e "\n${GREEN}1 秒后自动返回子菜单...${NC}"    
+        
             sleep 1
             show_submenu_2
             ;;
@@ -702,9 +723,16 @@ process_submenu_2_choice() {
             fi
             
             execute_command "mkdir -p /root/docker/firefox && cd /root/docker/firefox && echo -e \"version: '3'\nservices:\n  firefox:\n    image: jlesage/firefox\n    container_name: firefox\n    restart: unless-stopped\n    environment:\n      - TZ=America/New_York\n      - DISPLAY_WIDTH=1920\n      - DISPLAY_HEIGHT=1080\n      - KEEP_APP_RUNNING=1\n      - ENABLE_CJK_FONT=1\n      - VNC_PASSWORD=$firefox_password\n    ports:\n      - \\\"$firefox_http_port:5800\\\"\n      - \\\"$firefox_vnc_port:5900\\\"\n    volumes:\n      - /Docker/firefox:/config:rw\n    shm_size: 6g\" > docker-compose.yml && docker-compose up -d" "Firefox 安装，端口:$firefox_http_port&$firefox_vnc_port"
-            echo -e "\n${GREEN}1 秒后自动返回子菜单...${NC}"
-            echo -e "\n${GREEN}浏览器访问 http://$server_ip:$firefox_http_port 即可打开 Firefox，VNC端口:$firefox_vnc_port，密码为 $firefox_password${NC}"
+            
+            echo -e "\n${GREEN}================================${NC}"
+            echo -e "\n${GREEN}浏览器访问 http://$server_ip:$firefox_http_port 即可打开 Firefox ${NC}"
+            echo -e "\n${GREEN}VNC端口:$firefox_vnc_port ${NC}"
+            echo -e "\n${RED} 密码：$firefox_password ${NC}"
             echo -e "\n${RED}用前须知：如果长期使用，请配置SSL证书确保数据安全！！！${NC}"
+            echo -e "\n${GREEN}强烈建议使用NPM进行反代！${NC}"
+            echo -e "\n${GREEN}================================${NC}"
+            echo -e "\n${GREEN}1 秒后自动返回子菜单...${NC}"    
+
             sleep 1
             show_submenu_2
             ;;
