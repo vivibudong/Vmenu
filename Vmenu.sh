@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  2025.4.27 v0.7
+#  2025.7.16 v0.62
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
@@ -165,7 +165,7 @@ execute_command() {
 #展示菜单头
 show_header() {
     echo -e "\n${RED}=============================================${NC}"
-    echo -e "${WHITE}              VV菜单❤   V0.7   ${NC}"
+    echo -e "${WHITE}              Vmenu❤   V0.62   ${NC}"
     echo -e "${RED}---------------------------------------------${NC}"
     echo -e " ${RED}● 博客地址:${NC} https://budongkeji.cc"
     echo -e " ${RED}● 脚本命令:${NC} bash <(curl -Ls s.v1v1.de/bash)"
@@ -184,9 +184,9 @@ show_main_menu() {
     echo -e "${RED}│${NC}"
     echo -e "${RED}│${NC}   ${GREEN}[1]${NC} ${WHITE}基础环境部署${NC}"
     echo -e "${RED}│${NC}"
-    echo -e "${RED}│${NC}   ${GREEN}[2]${NC} ${WHITE}一键部署Docker项目${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[2]${NC} ${WHITE}一键部署应用${NC}"
     echo -e "${RED}│${NC}"
-    echo -e "${RED}│${NC}   ${GREEN}[3]${NC} ${WHITE}服务器测试${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[9]${NC} ${WHITE}服务器测试${NC}"
     echo -e "${RED}│${NC}"
     echo -e "${RED}│${NC}   ${GREEN}[0]${NC} ${WHITE}退出脚本${NC}"
     echo -e "${RED}│${NC}"
@@ -195,7 +195,7 @@ show_main_menu() {
     # 运行次数
     echo -e "\n${BLUE}→ 脚本总计运行: - 次${NC}\n"
 
-    echo -e "${YELLOW}请输入选项号码 [0-3]:${NC} "
+    echo -e "${YELLOW}请输入选项号码 [0-9]:${NC} "
     
 
     if [ -t 0 ]; then
@@ -217,8 +217,8 @@ process_main_choice() {
         2)
             show_submenu_2
             ;;
-        3)
-            show_submenu_3
+        9)
+            show_submenu_9
             ;;
         0)
             echo -e "\n${YELLOW}感谢使用，再见！${NC}"
@@ -749,19 +749,24 @@ process_submenu_2_choice() {
     esac
 }
 
-# 子菜单3
 
-show_submenu_3() {
+
+
+
+
+# 子菜单9
+
+show_submenu_9() {
     show_header
     echo -e "${RED}=============================================${NC}"
     echo -e "${RED}│${NC}"
-    echo -e "${RED}│${NC}${BORDER}${RED}          3.服务器测试                      ${NC}"
+    echo -e "${RED}│${NC}${BORDER}${RED}          9.服务器测试                      ${NC}"
     echo -e "${RED}│${NC}"
     echo -e "${RED}=============================================${NC}"
     echo -e "${RED}│${NC}"
-    echo -e "${RED}│${NC}   ${GREEN}[301]${NC} ${WHITE}NodeQuality融合测试 *荐${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[901]${NC} ${WHITE}NodeQuality融合测试 *荐${NC}"
     echo -e "${RED}│${NC}"
-    echo -e "${RED}│${NC}   ${GREEN}[302]${NC} ${WHITE}网速测试${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[902]${NC} ${WHITE}网速测试${NC}"
     echo -e "${RED}│${NC}"
     echo -e "${RED}│${NC}   ${GREEN}[0]${NC} ${WHITE}返回主菜单${NC}"
     echo -e "${RED}│${NC}"
@@ -771,27 +776,27 @@ show_submenu_3() {
     
     if [ -t 0 ]; then
         read -r subchoice
-        process_submenu_3_choice "$subchoice"
+        process_submenu_9_choice "$subchoice"
     else
         echo -e "${YELLOW}非交互式环境，无法读取输入。${NC}"
         exit 0
     fi
 }
 
-process_submenu_3_choice() {
+process_submenu_9_choice() {
     local subchoice="$1"
     case $subchoice in
-        301)
+        901)
             execute_command "bash <(curl -sL https://run.NodeQuality.com)" "NodeQuality融合测试"
             echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
             sleep 1
-            show_submenu_3
+            show_submenu_9
             ;;
-        302)
+        902)
             execute_command "curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash && sudo apt-get install speedtest -y && speedtest" "网速测试"
             echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
             sleep 1
-            show_submenu_3
+            show_submenu_9
             ;;
         0)
             show_main_menu
@@ -800,7 +805,7 @@ process_submenu_3_choice() {
             echo -e "\n${RED}错误: 无效的选项！${NC}"
             echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
             sleep 1
-            show_submenu_3
+            show_submenu_9
             ;;
     esac
 }
