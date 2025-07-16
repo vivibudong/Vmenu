@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  2025.4.27 v0.6
+#  2025.4.27 v0.7
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
@@ -10,11 +10,17 @@ BORDER='\033[38;2;255;119;119m'
 WHITE='\033[1;37m'
 NC='\033[0m' 
 
+
 # 定义本机ip
-server_ip=$(ip -4 addr | grep -v "127.0.0.1" | grep -Po 'inet \K[\d.]+' | head -1)
+server_ip=$(ip route get 1 2>/dev/null | awk '{print $7}' | head -1)
+if [ -z "$server_ip" ]; then
+    server_ip=$(hostname -I 2>/dev/null | awk '{print $1}')
+fi
 if [ -z "$server_ip" ]; then
     server_ip="服务器IP"
 fi
+
+
 
 # 定义DockerCompose函数
 install_docker() {
@@ -47,6 +53,7 @@ install_docker() {
         echo -e "\n${RED}为Docker Compose添加执行权限失败${NC}"
         return 1
     fi
+
     
     # 验证安装
     if command -v docker &> /dev/null && command -v docker-compose &> /dev/null; then
@@ -60,6 +67,8 @@ install_docker() {
     fi
 }
 
+
+#检查docker
 check_docker() {
     if [ "$(id -u)" -ne 0 ]; then
         echo -e "\n${RED}请以root用户或使用sudo运行此脚本${NC}"
@@ -133,6 +142,7 @@ check_docker() {
 }
 
 
+#代码输出
 execute_command() {
     local cmd="$1"
     local description="$2"
@@ -152,34 +162,36 @@ execute_command() {
     return $status
 }
 
-
+#展示菜单头
 show_header() {
-    echo -e "\n${BORDER}=============================================${NC}"
-    echo -e "${BORDER}${WHITE}              VV菜单❤   V0.6   ${BORDER}${NC}"
-    echo -e "${BORDER}─────────────────────────────────────────────${NC}"
-    echo -e "${BORDER}${NC} ${RED}● 博客地址:${NC} https://budongkeji.cc     ${BORDER}${NC}"
-    echo -e "${BORDER}${NC} ${RED}● 脚本命令:${NC} bash <(curl -Ls s.v1v1.de/bash)     ${BORDER}${NC}"
-    
-    echo -e "${BORDER}=============================================${NC}"
+    echo -e "\n${RED}=============================================${NC}"
+    echo -e "${WHITE}              VV菜单❤   V0.7   ${NC}"
+    echo -e "${RED}---------------------------------------------${NC}"
+    echo -e " ${RED}● 博客地址:${NC} https://budongkeji.cc"
+    echo -e " ${RED}● 脚本命令:${NC} bash <(curl -Ls s.v1v1.de/bash)"
+    echo -e "${RED}=============================================${NC}"
 }
 
-show_main_menu() {
 
+#展示主菜单
+show_main_menu() {
     show_header
-    echo -e "${BORDER}${NC}   ${GREEN}      ${BORDER}${NC}"
-    echo -e "${BORDER}${WHITE}                    主菜单                       ${BORDER}${NC}"
-    echo -e "${BORDER}${NC}   ${GREEN}      ${BORDER}${NC}"
-    echo -e "${BORDER}=============================================${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}      ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${RED}[1]${NC} 基础环境部署                                    ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}      ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[2]${NC} 一键部署Docker项目                     ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}                                                            ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[3]${NC} 服务器测试                                           ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}                                                            ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[0]${NC} 退出脚本                                             ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}      ${BORDER}${NC}"
-    echo -e "${BORDER}=============================================${NC}"
+    echo -e "${RED}=============================================${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}${RED}               主菜单                    ${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}=============================================${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[1]${NC} ${WHITE}基础环境部署${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[2]${NC} ${WHITE}一键部署Docker项目${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[3]${NC} ${WHITE}服务器测试${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[0]${NC} ${WHITE}退出脚本${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}=============================================${NC}"
+}
 
     # 运行次数
     echo -e "\n${BLUE}→ 脚本总计运行: - 次${NC}\n"
@@ -196,6 +208,7 @@ show_main_menu() {
     fi
 }
 
+#主菜单选择
 process_main_choice() {
     local choice="$1"
     case $choice in
@@ -224,26 +237,32 @@ process_main_choice() {
 # 子菜单1
 show_submenu_1() {
     show_header
-    echo -e "${BORDER}${WHITE}        1.基础环境部署                  ${BORDER}${NC}"
-    echo -e "${BORDER}=============================================${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${RED}[101]${NC} **一键执行全部**                                      ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[102]${NC} 更新软件包                                         ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[103]${NC} 安装基础软件包                                     ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[104]${NC} 安装Fail2Ban                                      ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[105]${NC} 开启原版BBR+FQ                                    ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[106]${NC} 设置Swap虚拟内存                             ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[107]${NC} 设置上海时区                                       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[0]${NC} 返回主菜单                                           ${BORDER}${NC}"
-    echo -e "${BORDER}=============================================${NC}"
+    echo -e "${RED}=============================================${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}${BORDER}${RED}         1.基础环境部署                  ${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}=============================================${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[101]${NC} ${RED}**一键执行全部**${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[102]${NC} ${WHITE}更新软件包${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[103]${NC} ${WHITE}安装基础软件包${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[104]${NC} ${WHITE}安装Fail2Ban${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[105]${NC} ${WHITE}开启原版BBR+FQ${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[106]${NC} ${WHITE}设置Swap虚拟内存${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[107]${NC} ${WHITE}设置上海时区${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[0]${NC} ${WHITE}返回主菜单${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}=============================================${NC}"
+}
 
     echo -e "\n${YELLOW}请输入选项号码:${NC} "
     
@@ -256,6 +275,7 @@ show_submenu_1() {
     fi
 }
 
+#菜单1选择
 process_submenu_1_choice() {
     local subchoice="$1"
     case $subchoice in
@@ -352,33 +372,37 @@ process_submenu_1_choice() {
 }
 
 # 子菜单2
+
 show_submenu_2() {
     show_header
-    echo -e "${BORDER}${WHITE}            2.一键部署Docker项目                      ${BORDER}${NC}"
-    echo -e "${BORDER}=============================================${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[200]${NC} Docker&Compose安装   ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[201]${NC} NPM反代工具                                    ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[202]${NC} 图床EasyImage                                 "
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[203]${NC} 最新版Vertex+Qbit                                       "
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[204]${NC} jerry048/Dedicated-Seedbox    "
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}" 
-    echo -e "${BORDER}│${NC}   ${GREEN}[205]${NC} 影视站Libretv    "
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[206]${NC} 浏览器Chrome    "
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[207]${NC} 浏览器Firefox    "
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"   
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${RED}[999]${NC} *一键删除所有容器及镜像* 慎用   ${BORDER}${NC}" 
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[0]${NC} 返回主菜单                                           "
-    echo -e ""
-    echo -e "${BORDER}=============================================${NC}"
+    echo -e "${RED}=============================================${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}${BORDER}${RED}            2.一键部署Docker项目                ${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}=============================================${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[200]${NC} ${WHITE}Docker&Compose安装${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[201]${NC} ${WHITE}NPM反代工具${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[202]${NC} ${WHITE}图床EasyImage${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[203]${NC} ${WHITE}最新版Vertex+Qbit${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[204]${NC} ${WHITE}jerry048/Dedicated-Seedbox${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[205]${NC} ${WHITE}影视站Libretv${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[206]${NC} ${WHITE}浏览器Chrome${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[207]${NC} ${WHITE}浏览器Firefox${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[999]${NC} ${WHITE}*一键删除所有容器及镜像* 慎用${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[0]${NC} ${WHITE}返回主菜单${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}=============================================${NC}"
+
 
     echo -e "\n${YELLOW}请输入选项号码:${NC} "
     
@@ -426,8 +450,13 @@ process_submenu_2_choice() {
                 echo -e "${YELLOW}非交互式环境，使用默认管理界面端口 $admin_port${NC}"
                 execute_command "mkdir -p /root/docker/npm && cd /root/docker/npm && echo -e \"version: '3.8'\nservices:\n  app:\n    image: 'jc21/nginx-proxy-manager:latest'\n    restart: unless-stopped\n    ports:\n      - '80:80'\n      - '$admin_port:81'\n      - '443:443'\n    volumes:\n      - ./data:/data\n      - ./letsencrypt:/etc/letsencrypt\" > docker-compose.yml && docker-compose up -d" "NPM反代工具安装，管理界面端口:$admin_port"
             fi
-            echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
+            echo -e "\n${GREEN}================================${NC}"
+            echo -e "${GREEN}NPM安装完成！${NC}"
+            echo -e "${GREEN}访问地址: http://$server_ip:$admin_port${NC}"
             echo -e "\n${GREEN}默认账户：admin@example.com | 默认密码：changeme ${NC}"
+            echo -e "${GREEN}================================${NC}"
+            echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
+
             sleep 1
             show_submenu_2
             ;;
@@ -445,6 +474,10 @@ process_submenu_2_choice() {
                 echo -e "${YELLOW}非交互式环境，使用默认端口 $port${NC}"
                 execute_command "mkdir -p /root/docker/easyimage && cd /root/docker/easyimage && echo -e \"version: '3.3'\nservices:\n  easyimage:\n    image: ddsderek/easyimage:latest\n    container_name: easyimage\n    ports:\n      - '$port:80'\n    environment:\n      - TZ=Asia/Shanghai\n      - PUID=1000\n      - PGID=1000\n      - DEBUG=false\n    volumes:\n      - '/root/docker/easyimage/config:/app/web/config'\n      - '/root/docker/easyimage/i:/app/web/i'\n    restart: unless-stopped\" > docker-compose.yml && docker-compose up -d" "图床EasyImage安装，端口:$port"
             fi
+            echo -e "\n${GREEN}================================${NC}"
+            echo -e "${GREEN}EasyImage图床安装完成！${NC}"
+            echo -e "${GREEN}访问地址: http://$server_ip:$port${NC}"
+            echo -e "${GREEN}================================${NC}"
             echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
             sleep 1
             show_submenu_2
@@ -690,17 +723,22 @@ process_submenu_2_choice() {
 }
 
 # 子菜单3
+
 show_submenu_3() {
     show_header
-    echo -e "${BORDER}${WHITE}           3.服务器测试                      ${BORDER}${NC}"
-    echo -e "${BORDER}=============================================${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[301]${NC} ${RED}${BOLD}NodeQuality融合测试 *荐${NC}   ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[302]${NC} 网速测试    ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}       ${BORDER}${NC}"
-    echo -e "${BORDER}│${NC}   ${GREEN}[0]${NC} 返回主菜单    ${BORDER}${NC}"
-    echo -e "${BORDER}=============================================${NC}"
+    echo -e "${RED}=============================================${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}${BORDER}${RED}          3.服务器测试                      ${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}=============================================${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[301]${NC} ${WHITE}NodeQuality融合测试 *荐${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[302]${NC} ${WHITE}网速测试${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[0]${NC} ${WHITE}返回主菜单${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}=============================================${NC}"
 
     echo -e "\n${YELLOW}请输入选项号码:${NC} "
     
