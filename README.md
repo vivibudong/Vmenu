@@ -3,6 +3,11 @@
  
   Vmenu
 </h1>
+
+<div align="center">
+  <a href="README.md">🇺🇸 English</a> | <a href="README_CN.md">🇨🇳 中文</a>
+</div>
+
 <h5 align="center">
 A lightweight bash script designed to simplify VPS management by automating environment setup, installing popular Docker applications, and integrating server testing tools for performance and network benchmarking.
 </h5>
