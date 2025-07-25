@@ -135,7 +135,8 @@ check_docker() {
     else
         echo -e "\n---"
         echo -e "${GREEN}Docker和Docker Compose已安装${NC}"
-        echo -e "Docker版本: $(docker -v)  Docker Compose版本: $(docker-compose --version)"
+        echo -e "Docker版本: $(docker -v)  "
+        echo -e "Docker Compose版本: $(docker-compose --version)"
         echo -e "---\n"
         return 0
     fi
