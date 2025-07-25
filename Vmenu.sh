@@ -346,7 +346,7 @@ process_submenu_1_choice() {
                 break
             fi
             
-            execute_command "apt update -y && apt upgrade -y && apt install -y sudo && sudo dd if=/dev/zero of=/var/swap bs=1M count=$swap_size && sudo chmod 0600 /var/swap && sudo mkswap -f /var/swap && sudo swapon /var/swap && echo '/var/swap swap swap defaults 0 0' | sudo tee -a /etc/fstab && sudo swapon -a" "开启${swap_size}MiB虚拟内存"
+            execute_command "dd if=/dev/zero of=/var/swap bs=1M count=$swap_size && chmod 0600 /var/swap && sudo mkswap -f /var/swap && swapon /var/swap && echo '/var/swap swap swap defaults 0 0' | tee -a /etc/fstab && swapon -a" "开启${swap_size}MiB虚拟内存"
             echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
             sleep 1
             show_submenu_1
