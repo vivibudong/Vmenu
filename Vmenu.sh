@@ -432,11 +432,14 @@ process_submenu_1_choice() {
             execute_command "sudo systemctl restart fail2ban" "重启Fail2Ban服务"
             
             echo -e "\n${GREEN}✓ Fail2Ban 已成功安装并配置!${NC}"
-            echo -e "${GREEN}使用 'sudo fail2ban-client status sshd' 查看状态${NC}"
+            echo -e "${GREEN}使用 'fail2ban-client status sshd' 查看状态${NC}"
+            echo -e "${GREEN}使用 'cat /etc/fail2ban/jail.local' 查看配置${NC}"
+            
             echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
             sleep 1
             show_submenu_1
             ;;
+            
         # 104)
             # execute_command "apt update -y && apt upgrade -y && apt install -y sudo && sudo apt install -y wget curl && apt install -y fail2ban && sudo systemctl start fail2ban && sudo systemctl enable fail2ban && sudo systemctl restart fail2ban" "安装Fail2Ban"
             # echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
