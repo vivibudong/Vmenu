@@ -166,7 +166,7 @@ execute_command() {
 #展示菜单头
 show_header() {
     echo -e "\n${RED}=============================================${NC}"
-    echo -e "${WHITE}              Vmenu❤   V0.62   ${NC}"
+    echo -e "${WHITE}              Vmenu❤   V0.63   ${NC}"
     echo -e "${RED}---------------------------------------------${NC}"
     echo -e " ${RED}● 博客地址:${NC} https://budongkeji.cc"
     echo -e " ${RED}● 脚本命令:${NC} bash <(curl -Ls s.v1v1.de/bash)"
