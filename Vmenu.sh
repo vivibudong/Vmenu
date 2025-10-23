@@ -404,29 +404,23 @@ process_submenu_1_choice() {
             # 安装 Fail2Ban
             execute_command "apt update -y && apt upgrade -y && apt install -y sudo && sudo apt install -y wget curl && apt install -y fail2ban && sudo systemctl start fail2ban && sudo systemctl enable fail2ban" "安装Fail2Ban"
             
-            # 创建配置文件(不使用execute_command)
+            # 创建配置文件
             echo -e "${BLUE}[*] 配置Fail2Ban规则...${NC}"
-            cat > /etc/fail2ban/jail.local << 'EOFCONFIG'
-        [DEFAULT]
-        bantime = BAN_TIME_PLACEHOLDER
-        findtime = FIND_TIME_PLACEHOLDER
-        maxretry = MAX_RETRY_PLACEHOLDER
-        
-        [sshd]
-        enabled = true
-        port = SSH_PORT_PLACEHOLDER
-        filter = sshd
-        logpath = /var/log/auth.log
-        maxretry = MAX_RETRY_PLACEHOLDER
-        bantime = BAN_TIME_PLACEHOLDER
-        findtime = FIND_TIME_PLACEHOLDER
-        EOFCONFIG
-            
-            # 替换占位符
-            sed -i "s/BAN_TIME_PLACEHOLDER/${ban_time_sec}/g" /etc/fail2ban/jail.local
-            sed -i "s/FIND_TIME_PLACEHOLDER/${find_time_sec}/g" /etc/fail2ban/jail.local
-            sed -i "s/MAX_RETRY_PLACEHOLDER/${max_retry}/g" /etc/fail2ban/jail.local
-            sed -i "s/SSH_PORT_PLACEHOLDER/${ssh_port}/g" /etc/fail2ban/jail.local
+            {
+                echo "[DEFAULT]"
+                echo "bantime = ${ban_time_sec}"
+                echo "findtime = ${find_time_sec}"
+                echo "maxretry = ${max_retry}"
+                echo ""
+                echo "[sshd]"
+                echo "enabled = true"
+                echo "port = ${ssh_port}"
+                echo "filter = sshd"
+                echo "logpath = /var/log/auth.log"
+                echo "maxretry = ${max_retry}"
+                echo "bantime = ${ban_time_sec}"
+                echo "findtime = ${find_time_sec}"
+            } > /etc/fail2ban/jail.local
             
             if [ $? -eq 0 ]; then
                 echo -e "${GREEN}[✓] 配置Fail2Ban规则 - 成功${NC}"
