@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  2025.7.16 v0.62
+#  2025.10.23 v0.63
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
@@ -251,7 +251,7 @@ show_submenu_1() {
     echo -e "${RED}│${NC}"
     echo -e "${RED}│${NC}   ${GREEN}[103]${NC} ${WHITE}安装基础软件包${NC}"
     echo -e "${RED}│${NC}"
-    echo -e "${RED}│${NC}   ${GREEN}[104]${NC} ${WHITE}安装Fail2Ban${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[104]${NC} ${WHITE}安装/配置Fail2Ban${NC}"
     echo -e "${RED}│${NC}"
     echo -e "${RED}│${NC}   ${GREEN}[105]${NC} ${WHITE}开启原版BBR+FQ${NC}"
     echo -e "${RED}│${NC}"
