@@ -404,23 +404,38 @@ process_submenu_1_choice() {
             # 安装 Fail2Ban
             execute_command "apt update -y && apt upgrade -y && apt install -y sudo && sudo apt install -y wget curl && apt install -y fail2ban && sudo systemctl start fail2ban && sudo systemctl enable fail2ban" "安装Fail2Ban"
             
-            # 配置 Fail2Ban
-            execute_command "cat > /etc/fail2ban/jail.local << EOF
+            # 创建配置文件(不使用execute_command)
+            echo -e "${BLUE}[*] 配置Fail2Ban规则...${NC}"
+            cat > /etc/fail2ban/jail.local << 'EOFCONFIG'
         [DEFAULT]
-        bantime = ${ban_time_sec}
-        findtime = ${find_time_sec}
-        maxretry = ${max_retry}
+        bantime = BAN_TIME_PLACEHOLDER
+        findtime = FIND_TIME_PLACEHOLDER
+        maxretry = MAX_RETRY_PLACEHOLDER
         
         [sshd]
         enabled = true
-        port = ${ssh_port}
+        port = SSH_PORT_PLACEHOLDER
         filter = sshd
         logpath = /var/log/auth.log
-        maxretry = ${max_retry}
-        bantime = ${ban_time_sec}
-        findtime = ${find_time_sec}
-        EOF
-        sudo systemctl restart fail2ban" "配置Fail2Ban规则"
+        maxretry = MAX_RETRY_PLACEHOLDER
+        bantime = BAN_TIME_PLACEHOLDER
+        findtime = FIND_TIME_PLACEHOLDER
+        EOFCONFIG
+            
+            # 替换占位符
+            sed -i "s/BAN_TIME_PLACEHOLDER/${ban_time_sec}/g" /etc/fail2ban/jail.local
+            sed -i "s/FIND_TIME_PLACEHOLDER/${find_time_sec}/g" /etc/fail2ban/jail.local
+            sed -i "s/MAX_RETRY_PLACEHOLDER/${max_retry}/g" /etc/fail2ban/jail.local
+            sed -i "s/SSH_PORT_PLACEHOLDER/${ssh_port}/g" /etc/fail2ban/jail.local
+            
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}[✓] 配置Fail2Ban规则 - 成功${NC}"
+            else
+                echo -e "${RED}[✗] 配置Fail2Ban规则 - 失败${NC}"
+            fi
+            
+            # 重启服务
+            execute_command "sudo systemctl restart fail2ban" "重启Fail2Ban服务"
             
             echo -e "\n${GREEN}✓ Fail2Ban 已成功安装并配置!${NC}"
             echo -e "${GREEN}使用 'sudo fail2ban-client status sshd' 查看状态${NC}"
