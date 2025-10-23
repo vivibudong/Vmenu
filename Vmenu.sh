@@ -320,12 +320,120 @@ process_submenu_1_choice() {
             sleep 1
             show_submenu_1
             ;;
+
         104)
-            execute_command "apt update -y && apt upgrade -y && apt install -y sudo && sudo apt install -y wget curl && apt install -y fail2ban && sudo systemctl start fail2ban && sudo systemctl enable fail2ban && sudo systemctl restart fail2ban" "安装Fail2Ban"
+            echo -e "${YELLOW}=== Fail2Ban 配置 ===${NC}"
+            
+            # 询问监听端口
+            echo -e "${YELLOW}请输入要保护的SSH端口 (默认: 22):${NC}"
+            read -p "> " ssh_port
+            ssh_port=${ssh_port:-22}
+            
+            # 验证端口
+            if ! [[ "$ssh_port" =~ ^[0-9]+$ ]] || [ "$ssh_port" -lt 1 ] || [ "$ssh_port" -gt 65535 ]; then
+                echo -e "${RED}错误: 请输入有效的端口号 (1-65535)!${NC}"
+                echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
+                sleep 1
+                show_submenu_1
+                break
+            fi
+            
+            # 询问最大尝试次数
+            echo -e "${YELLOW}请输入失败尝试次数上限 (默认: 5):${NC}"
+            read -p "> " max_retry
+            max_retry=${max_retry:-5}
+            
+            # 验证次数
+            if ! [[ "$max_retry" =~ ^[0-9]+$ ]] || [ "$max_retry" -lt 1 ]; then
+                echo -e "${RED}错误: 请输入有效的数字 (≥1)!${NC}"
+                echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
+                sleep 1
+                show_submenu_1
+                break
+            fi
+            
+            # 询问封禁时长
+            echo -e "${YELLOW}请输入封禁时长 (单位: 分钟, 默认: 60):${NC}"
+            read -p "> " ban_time
+            ban_time=${ban_time:-60}
+            
+            # 验证时长
+            if ! [[ "$ban_time" =~ ^[0-9]+$ ]] || [ "$ban_time" -lt 1 ]; then
+                echo -e "${RED}错误: 请输入有效的数字 (≥1)!${NC}"
+                echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
+                sleep 1
+                show_submenu_1
+                break
+            fi
+            
+            # 询问查找时间窗口
+            echo -e "${YELLOW}请输入查找时间窗口 (单位: 分钟, 默认: 10):${NC}"
+            read -p "> " find_time
+            find_time=${find_time:-10}
+            
+            # 验证时间窗口
+            if ! [[ "$find_time" =~ ^[0-9]+$ ]] || [ "$find_time" -lt 1 ]; then
+                echo -e "${RED}错误: 请输入有效的数字 (≥1)!${NC}"
+                echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
+                sleep 1
+                show_submenu_1
+                break
+            fi
+            
+            # 显示配置摘要
+            echo -e "\n${GREEN}配置摘要:${NC}"
+            echo -e "  SSH端口: ${YELLOW}$ssh_port${NC}"
+            echo -e "  失败次数上限: ${YELLOW}$max_retry${NC}"
+            echo -e "  封禁时长: ${YELLOW}$ban_time 分钟${NC}"
+            echo -e "  查找时间窗口: ${YELLOW}$find_time 分钟${NC}"
+            echo -e "\n${YELLOW}确认安装? (y/n):${NC}"
+            read -p "> " confirm
+            
+            if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+                echo -e "${RED}已取消安装${NC}"
+                echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
+                sleep 1
+                show_submenu_1
+                break
+            fi
+            
+            # 转换为秒
+            ban_time_sec=$((ban_time * 60))
+            find_time_sec=$((find_time * 60))
+            
+            # 安装 Fail2Ban
+            execute_command "apt update -y && apt upgrade -y && apt install -y sudo && sudo apt install -y wget curl && apt install -y fail2ban && sudo systemctl start fail2ban && sudo systemctl enable fail2ban" "安装Fail2Ban"
+            
+            # 配置 Fail2Ban
+            execute_command "cat > /etc/fail2ban/jail.local << EOF
+        [DEFAULT]
+        bantime = ${ban_time_sec}
+        findtime = ${find_time_sec}
+        maxretry = ${max_retry}
+        
+        [sshd]
+        enabled = true
+        port = ${ssh_port}
+        filter = sshd
+        logpath = /var/log/auth.log
+        maxretry = ${max_retry}
+        bantime = ${ban_time_sec}
+        findtime = ${find_time_sec}
+        EOF
+        sudo systemctl restart fail2ban" "配置Fail2Ban规则"
+            
+            echo -e "\n${GREEN}✓ Fail2Ban 已成功安装并配置!${NC}"
+            echo -e "${GREEN}使用 'sudo fail2ban-client status sshd' 查看状态${NC}"
             echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
             sleep 1
             show_submenu_1
             ;;
+        # 104)
+            # execute_command "apt update -y && apt upgrade -y && apt install -y sudo && sudo apt install -y wget curl && apt install -y fail2ban && sudo systemctl start fail2ban && sudo systemctl enable fail2ban && sudo systemctl restart fail2ban" "安装Fail2Ban"
+            # echo -e "\n${PURPLE}1秒后自动返回子菜单...${NC}"
+            # sleep 1
+            # show_submenu_1
+            # ;;
 
         105)
             execute_command "echo \"net.core.default_qdisc=fq\" | sudo tee -a /etc/sysctl.conf && echo \"net.ipv4.tcp_congestion_control=bbr\" | sudo tee -a /etc/sysctl.conf && sudo sysctl -p" "开启原版BBR+FQ"
