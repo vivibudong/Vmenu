@@ -1182,7 +1182,7 @@ process_submenu_3_choice() {
                     return
                 fi
                 
-                caddy_address="https://$server_ip:$https_port"
+                caddy_address=":$https_port"
             fi
             
             # 询问反代目标
@@ -1280,7 +1280,7 @@ process_submenu_3_choice() {
                     *)
                         echo -e "${YELLOW}使用官方脚本安装Caddy...${NC}"
                         execute_shell_command "安装Caddy" \
-                            "curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg"
+                            "curl https://getcaddy.com | bash -s personal"
                         ;;
                 esac
                 
@@ -1290,7 +1290,7 @@ process_submenu_3_choice() {
                     return
                 fi
                 
-                echo -e "${GREEN}Caddy安装成功${NC}"
+                echo -e "${GREEN}✓ Caddy安装成功${NC}"
                 echo -e "Caddy版本: $(caddy version)"
             else
                 echo -e "${GREEN}Caddy已安装${NC}"
@@ -1323,19 +1323,18 @@ $caddy_address {
 }
 EOF
             else
-                # IP模式
+                # IP模式 - 修复后的配置
                 cat > /etc/caddy/Caddyfile <<EOF
 # Caddy 自签证书配置 (IP模式)
 # 生成时间: $(date '+%Y-%m-%d %H:%M:%S')
 
 {
     auto_https disable_redirects
+    admin off
 }
 
 $caddy_address {
-    tls internal {
-        on_demand
-    }
+    tls internal
     
     $backend_config
     
@@ -1347,64 +1346,151 @@ $caddy_address {
     }
 }
 
-# HTTP重定向
-http://$server_ip:80 {
+# HTTP重定向（可选）
+:80 {
     redir https://$server_ip:$https_port{uri} permanent
 }
 EOF
             fi
             
             if [ $? -eq 0 ]; then
-                echo -e "${GREEN}Caddyfile配置成功${NC}"
+                echo -e "${GREEN}✓ Caddyfile配置成功${NC}"
+                echo -e "${YELLOW}配置文件内容:${NC}"
+                echo -e "${BORDER}---配置开始---${NC}"
+                cat /etc/caddy/Caddyfile
+                echo -e "${BORDER}---配置结束---${NC}"
             else
-                echo -e "${RED}Caddyfile配置失败${NC}"
+                echo -e "${RED}✗ Caddyfile配置失败${NC}"
                 wait_and_return show_submenu_3
                 return
             fi
             
             # 创建日志目录
             mkdir -p /var/log/caddy
+            chown -R caddy:caddy /var/log/caddy 2>/dev/null || chown -R root:root /var/log/caddy
             
             # 验证配置
             echo -e "\n${BLUE}正在验证Caddy配置...${NC}"
-            if execute_command "验证Caddy配置" caddy validate --config /etc/caddy/Caddyfile; then
-                echo -e "${GREEN}配置验证通过${NC}"
+            if caddy validate --config /etc/caddy/Caddyfile 2>&1 | tee /tmp/caddy_validate.log; then
+                echo -e "${GREEN}✓ 配置验证通过${NC}"
             else
-                echo -e "${RED}配置验证失败${NC}"
+                echo -e "${RED}✗ 配置验证失败${NC}"
+                echo -e "${RED}错误详情:${NC}"
+                cat /tmp/caddy_validate.log
                 wait_and_return show_submenu_3
                 return
+            fi
+            
+            # 检查端口占用
+            echo -e "\n${BLUE}检查端口占用情况...${NC}"
+            
+            # 检查netstat是否可用
+            if ! command -v netstat &> /dev/null; then
+                echo -e "${YELLOW}安装网络工具...${NC}"
+                local pm=$(detect_package_manager)
+                case $pm in
+                    apt)
+                        install_package net-tools
+                        ;;
+                    yum|dnf)
+                        install_package net-tools
+                        ;;
+                esac
+            fi
+            
+            # 检查https端口
+            if command -v netstat &> /dev/null; then
+                if netstat -tlnp 2>/dev/null | grep -q ":$https_port "; then
+                    echo -e "${YELLOW}警告: 端口 $https_port 已被占用${NC}"
+                    netstat -tlnp | grep ":$https_port " | head -5
+                fi
+                
+                if netstat -tlnp 2>/dev/null | grep -q ":80 "; then
+                    echo -e "${YELLOW}警告: 端口 80 已被占用${NC}"
+                    netstat -tlnp | grep ":80 " | head -5
+                fi
             fi
             
             # 停止可能冲突的服务
             if systemctl is-active --quiet nginx; then
                 echo -e "${YELLOW}检测到Nginx正在运行${NC}"
-                if [ "$https_port" = "443" ] || [ "$access_type" = "1" ]; then
-                    echo -e "${YELLOW}端口可能冲突，建议停止Nginx${NC}"
-                    if confirm_action "是否停止Nginx服务？" "y"; then
-                        execute_command "停止Nginx" systemctl stop nginx
-                    fi
+                if confirm_action "是否停止Nginx服务以避免端口冲突？" "y"; then
+                    execute_command "停止Nginx" systemctl stop nginx
+                    execute_command "禁用Nginx开机自启" systemctl disable nginx
                 fi
+            fi
+            
+            if systemctl is-active --quiet apache2 2>/dev/null; then
+                echo -e "${YELLOW}检测到Apache正在运行${NC}"
+                if confirm_action "是否停止Apache服务以避免端口冲突？" "y"; then
+                    execute_command "停止Apache" systemctl stop apache2
+                    execute_command "禁用Apache开机自启" systemctl disable apache2
+                fi
+            fi
+            
+            if systemctl is-active --quiet httpd 2>/dev/null; then
+                echo -e "${YELLOW}检测到httpd正在运行${NC}"
+                if confirm_action "是否停止httpd服务以避免端口冲突？" "y"; then
+                    execute_command "停止httpd" systemctl stop httpd
+                    execute_command "禁用httpd开机自启" systemctl disable httpd
+                fi
+            fi
+            
+            # 如果Caddy已在运行,先停止
+            if systemctl is-active --quiet caddy; then
+                echo -e "${YELLOW}停止现有Caddy服务...${NC}"
+                execute_command "停止Caddy" systemctl stop caddy
+                sleep 2
             fi
             
             # 启动Caddy
             echo -e "\n${BLUE}正在启动Caddy服务...${NC}"
             execute_command "重载systemd" systemctl daemon-reload
-            execute_command "启动Caddy" systemctl start caddy
+            
+            # 尝试启动Caddy并捕获错误
+            echo -e "${BLUE}启动Caddy服务...${NC}"
+            if systemctl start caddy; then
+                echo -e "${GREEN}✓ Caddy启动命令执行成功${NC}"
+            else
+                echo -e "${RED}✗ Caddy启动失败${NC}"
+                echo -e "${RED}服务状态:${NC}"
+                systemctl status caddy --no-pager -l
+                echo -e "\n${RED}详细日志:${NC}"
+                journalctl -u caddy -n 100 --no-pager
+                echo -e "\n${YELLOW}尝试手动启动以查看详细错误:${NC}"
+                echo -e "${YELLOW}caddy run --config /etc/caddy/Caddyfile${NC}"
+                wait_and_return show_submenu_3
+                return
+            fi
+            
             execute_command "启用Caddy开机自启" systemctl enable caddy
             
             # 检查服务状态
-            sleep 2
+            echo -e "\n${BLUE}等待服务完全启动...${NC}"
+            sleep 3
+            
             if systemctl is-active --quiet caddy; then
-                echo -e "${GREEN}Caddy服务运行中${NC}"
+                echo -e "${GREEN}✓ Caddy服务运行中${NC}"
+                echo -e "${GREEN}服务状态:${NC}"
+                systemctl status caddy --no-pager -l | head -15
             else
-                echo -e "${RED}Caddy服务启动失败${NC}"
-                echo -e "${YELLOW}查看错误日志: journalctl -u caddy -n 50${NC}"
+                echo -e "${RED}✗ Caddy服务启动失败${NC}"
+                echo -e "${RED}完整服务状态:${NC}"
+                systemctl status caddy --no-pager -l
+                echo -e "\n${RED}最近错误日志:${NC}"
+                journalctl -u caddy -n 100 --no-pager
+                
+                echo -e "\n${YELLOW}调试建议:${NC}"
+                echo -e "1. 手动测试配置: ${YELLOW}caddy run --config /etc/caddy/Caddyfile${NC}"
+                echo -e "2. 查看详细日志: ${YELLOW}journalctl -u caddy -f${NC}"
+                echo -e "3. 检查端口占用: ${YELLOW}netstat -tlnp | grep -E ':(80|$https_port) '${NC}"
+                
                 wait_and_return show_submenu_3
                 return
             fi
             
             # 配置防火墙
-            if command -v ufw &> /dev/null && ufw status | grep -q "Status: active"; then
+            if command -v ufw &> /dev/null && ufw status 2>/dev/null | grep -q "Status: active"; then
                 echo -e "\n${YELLOW}检测到UFW防火墙已启用${NC}"
                 if confirm_action "是否配置防火墙规则？" "y"; then
                     if [ "$access_type" = "2" ]; then
@@ -1416,11 +1502,23 @@ EOF
                     fi
                     execute_command "重载UFW" ufw reload
                 fi
+            elif command -v firewall-cmd &> /dev/null && systemctl is-active --quiet firewalld; then
+                echo -e "\n${YELLOW}检测到firewalld防火墙已启用${NC}"
+                if confirm_action "是否配置防火墙规则？" "y"; then
+                    if [ "$access_type" = "2" ]; then
+                        execute_command "允许HTTP(80)" firewall-cmd --permanent --add-port=80/tcp
+                        execute_command "允许HTTPS端口($https_port)" firewall-cmd --permanent --add-port="$https_port/tcp"
+                    else
+                        execute_command "允许HTTP(80)" firewall-cmd --permanent --add-port=80/tcp
+                        execute_command "允许HTTPS(443)" firewall-cmd --permanent --add-port=443/tcp
+                    fi
+                    execute_command "重载firewalld" firewall-cmd --reload
+                fi
             fi
             
             # 显示完成信息
             echo -e "\n${GREEN}================================${NC}"
-            echo -e "${GREEN}Caddy自签证书配置完成${NC}"
+            echo -e "${GREEN}✓ Caddy自签证书配置完成！${NC}"
             echo -e "${GREEN}================================${NC}"
             
             if [ "$access_type" = "1" ]; then
@@ -1436,31 +1534,33 @@ EOF
             echo -e "${GREEN}配置文件: ${YELLOW}/etc/caddy/Caddyfile${NC}"
             echo -e "${GREEN}日志文件: ${YELLOW}/var/log/caddy/access.log${NC}"
             echo -e "${GREEN}================================${NC}"
+            
             echo -e "${YELLOW}重要提示:${NC}"
             echo -e "1. ${RED}自签证书会导致浏览器显示安全警告${NC}"
-            echo -e "2. 访问时需要在浏览器中点击高级然后继续访问"
+            echo -e "2. 访问时需要在浏览器中点击'高级'→'继续访问'"
             echo -e "3. 或在浏览器中手动信任该证书"
             
             if [ "$access_type" = "1" ]; then
                 echo -e "4. 请确保域名 $domain_or_ip 已正确解析到 $server_ip"
-                echo -e "5. 如需使用受信任证书需要公网域名并配置正确的DNS"
+                echo -e "5. 如需使用受信任证书，需要公网域名并配置正确的DNS"
             else
-                echo -e "4. 使用IP访问时浏览器警告是正常现象"
-                echo -e "5. 生产环境建议使用域名加Let's Encrypt证书"
+                echo -e "4. 使用IP访问时，浏览器警告是正常现象"
+                echo -e "5. 生产环境建议使用域名+Let's Encrypt证书"
             fi
             
             echo -e "\n${GREEN}常用管理命令:${NC}"
             echo -e "查看状态: ${YELLOW}systemctl status caddy${NC}"
             echo -e "重启服务: ${YELLOW}systemctl restart caddy${NC}"
+            echo -e "停止服务: ${YELLOW}systemctl stop caddy${NC}"
             echo -e "查看日志: ${YELLOW}journalctl -u caddy -f${NC}"
             echo -e "查看访问日志: ${YELLOW}tail -f /var/log/caddy/access.log${NC}"
             echo -e "重载配置: ${YELLOW}caddy reload --config /etc/caddy/Caddyfile${NC}"
             echo -e "验证配置: ${YELLOW}caddy validate --config /etc/caddy/Caddyfile${NC}"
+            echo -e "手动运行: ${YELLOW}caddy run --config /etc/caddy/Caddyfile${NC}"
             echo -e "${GREEN}================================${NC}"
             
             wait_and_return show_submenu_3
             ;;
-
 
 # Nginx管理函数
 manage_nginx() {
