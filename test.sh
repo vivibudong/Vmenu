@@ -853,7 +853,7 @@ EOF
             echo -e "\n${GREEN}您设置的参数如下:${NC}"
             echo -e "${GREEN}qBittorrent缓存大小: ${QB_CACHE_SIZE} MiB${NC}"
             echo -e "${GREEN}qBittorrent版本: ${QB_VERSION}  | libtorrent版本: ${LT_VERSION}${NC}"
-            echo -e "${GREEN}默认用户名: admin  | 默认密码: 请自行设置安全密码${NC}"
+            echo -e "${GREEN}默认用户名: admin${NC}"
             
             if [ "$INSTALL_VERTEX" -eq 1 ]; then
                 echo -e "${GREEN}同时将安装最新版Vertex并启用BBRx${NC}"
