@@ -51,7 +51,7 @@ bash <(curl -Ls s.v1v1.de/bash)
 - **1. Environment Setup**
 
 ### Notes
-- The script is tested on Debian 12. Compatibility with other distros may vary.
+- The script is tested on Debian/CentOS/Ubuntu. Compatibility with other distros may vary.
 
 ### Contributing
 Contributions are welcome!
