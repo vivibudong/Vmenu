@@ -1561,6 +1561,8 @@ EOF
             
             wait_and_return show_submenu_3
             ;;
+    esac
+}
 
 # Nginx管理函数
 manage_nginx() {
