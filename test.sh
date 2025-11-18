@@ -1120,7 +1120,6 @@ process_submenu_3_choice() {
             manage_nginx
             wait_and_return show_submenu_3
             ;;
-    esac
 }
 # Nginx管理函数
 manage_nginx() {
