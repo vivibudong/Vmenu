@@ -827,7 +827,6 @@ EOF
             ;;
 
         204)
-            
             local QB_CACHE_SIZE QB_VERSION LT_VERSION INSTALL_VERTEX VERTEX_OPTION
             
             safe_read "请设置qBittorrent缓存大小（单位为MiB，建议设置为1/4内存大小）:" "" QB_CACHE_SIZE
