@@ -1462,6 +1462,9 @@ EOF
             ;;
            
 
+    esac
+}
+
 # Nginx管理函数
 manage_nginx() {
     echo -e "\n${GREEN}=== Nginx 服务管理 ===${NC}"
