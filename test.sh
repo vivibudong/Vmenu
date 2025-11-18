@@ -241,11 +241,18 @@ install_docker() {
         return 1
     fi
     
-    echo -e "\n${YELLOW}正在启用Docker服务...${NC}"
-    if ! execute_command "启用Docker服务" systemctl enable docker; then
-        echo -e "\n${RED}Docker服务启用失败${NC}"
+    echo -e "\n${YELLOW}正在启动Docker服务...${NC}"
+    if ! execute_command "启动Docker服务" systemctl start docker; then
+        echo -e "\n${RED}Docker服务启动失败，请检查系统日志 (journalctl -u docker)${NC}"
         return 1
     fi
+    
+    # 验证 Docker daemon 是否运行（增强验证）
+    if ! execute_command "验证Docker daemon" docker version; then
+        echo -e "\n${RED}Docker daemon 未运行或连接失败，请手动检查 (systemctl status docker)${NC}"
+        return 1
+    fi
+    echo -e "\n${GREEN}Docker daemon 运行正常！${NC}"
     
     echo -e "\n${YELLOW}正在安装Docker Compose插件...${NC}"
     local pm=$(detect_package_manager)
