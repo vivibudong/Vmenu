@@ -687,7 +687,6 @@ process_submenu_2_choice() {
             install_docker
             wait_and_return show_submenu_2
             ;;
-
         201)
             check_docker || return
             
@@ -695,6 +694,53 @@ process_submenu_2_choice() {
             safe_read "设置NPM管理端口 [回车默认81]:" "81" admin_port
             
             if ! validate_port "$admin_port"; then
+                echo -e "${RED}错误: 无效的端口号${NC}"
+                wait_and_return show_submenu_2
+                return
+            fi
+            
+            mkdir -p /root/docker/npm
+            cd /root/docker/npm
+            
+            cat > docker-compose.yml <<EOF
+version: '3.8'
+services:
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: npm
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '$admin_port:81'
+      - '443:443'
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+EOF
+            
+            local compose_cmd=$(get_docker_compose_cmd)
+            execute_command "启动NPM" $compose_cmd up -d
+            
+            echo -e "\n${GREEN}================================${NC}"
+            echo -e "${GREEN}NPM反代工具安装完成！${NC}"
+            echo -e "${GREEN}管理界面: http://$SERVER_IP:$admin_port${NC}"
+            echo -e "${GREEN}默认账户: admin@example.com${NC}"
+            echo -e "${GREEN}默认密码: changeme${NC}"
+            echo -e "${YELLOW}首次登录后请立即修改密码！${NC}"
+            echo -e "${GREEN}================================${NC}"
+            
+            wait_and_return show_submenu_2
+            ;;
+
+        202)
+            check_docker || return
+            
+            local port
+            safe_read "设置EasyImage访问端口 [回车默认8080]:" "8080" port
+            
+            if ! validate_port "$port"; then
                 echo -e "${RED}错误: 无效的端口号${NC}"
                 wait_and_return show_submenu_2
                 return
@@ -717,8 +763,8 @@ services:
       - PGID=1000
       - DEBUG=false
     volumes:
-      - '/root/docker/easyimage/config:/app/web/config'
-      - '/root/docker/easyimage/i:/app/web/i'
+      - './config:/app/web/config'
+      - './i:/app/web/i'
     restart: unless-stopped
 EOF
             
