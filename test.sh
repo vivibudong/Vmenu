@@ -1290,7 +1290,7 @@ process_submenu_3_choice() {
                     return
                 fi
                 
-                echo -e "${GREEN}✓ Caddy安装成功${NC}"
+                echo -e "${GREEN}Caddy安装成功${NC}"
                 echo -e "Caddy版本: $(caddy version)"
             else
                 echo -e "${GREEN}Caddy已安装${NC}"
@@ -1347,7 +1347,7 @@ $caddy_address {
     }
 }
 
-# HTTP重定向（可选）
+# HTTP重定向
 http://$server_ip:80 {
     redir https://$server_ip:$https_port{uri} permanent
 }
@@ -1355,9 +1355,9 @@ EOF
             fi
             
             if [ $? -eq 0 ]; then
-                echo -e "${GREEN}✓ Caddyfile配置成功${NC}"
+                echo -e "${GREEN}Caddyfile配置成功${NC}"
             else
-                echo -e "${RED}✗ Caddyfile配置失败${NC}"
+                echo -e "${RED}Caddyfile配置失败${NC}"
                 wait_and_return show_submenu_3
                 return
             fi
@@ -1368,9 +1368,9 @@ EOF
             # 验证配置
             echo -e "\n${BLUE}正在验证Caddy配置...${NC}"
             if execute_command "验证Caddy配置" caddy validate --config /etc/caddy/Caddyfile; then
-                echo -e "${GREEN}✓ 配置验证通过${NC}"
+                echo -e "${GREEN}配置验证通过${NC}"
             else
-                echo -e "${RED}✗ 配置验证失败${NC}"
+                echo -e "${RED}配置验证失败${NC}"
                 wait_and_return show_submenu_3
                 return
             fi
@@ -1395,9 +1395,9 @@ EOF
             # 检查服务状态
             sleep 2
             if systemctl is-active --quiet caddy; then
-                echo -e "${GREEN}✓ Caddy服务运行中${NC}"
+                echo -e "${GREEN}Caddy服务运行中${NC}"
             else
-                echo -e "${RED}✗ Caddy服务启动失败${NC}"
+                echo -e "${RED}Caddy服务启动失败${NC}"
                 echo -e "${YELLOW}查看错误日志: journalctl -u caddy -n 50${NC}"
                 wait_and_return show_submenu_3
                 return
@@ -1420,7 +1420,7 @@ EOF
             
             # 显示完成信息
             echo -e "\n${GREEN}================================${NC}"
-            echo -e "${GREEN}✓ Caddy自签证书配置完成！${NC}"
+            echo -e "${GREEN}Caddy自签证书配置完成${NC}"
             echo -e "${GREEN}================================${NC}"
             
             if [ "$access_type" = "1" ]; then
@@ -1438,15 +1438,15 @@ EOF
             echo -e "${GREEN}================================${NC}"
             echo -e "${YELLOW}重要提示:${NC}"
             echo -e "1. ${RED}自签证书会导致浏览器显示安全警告${NC}"
-            echo -e "2. 访问时需要在浏览器中点击'高级'→'继续访问'"
+            echo -e "2. 访问时需要在浏览器中点击高级然后继续访问"
             echo -e "3. 或在浏览器中手动信任该证书"
             
             if [ "$access_type" = "1" ]; then
                 echo -e "4. 请确保域名 $domain_or_ip 已正确解析到 $server_ip"
-                echo -e "5. 如需使用受信任证书，需要公网域名并配置正确的DNS"
+                echo -e "5. 如需使用受信任证书需要公网域名并配置正确的DNS"
             else
-                echo -e "4. 使用IP访问时，浏览器警告是正常现象"
-                echo -e "5. 生产环境建议使用域名+Let's Encrypt证书"
+                echo -e "4. 使用IP访问时浏览器警告是正常现象"
+                echo -e "5. 生产环境建议使用域名加Let's Encrypt证书"
             fi
             
             echo -e "\n${GREEN}常用管理命令:${NC}"
@@ -1460,10 +1460,7 @@ EOF
             
             wait_and_return show_submenu_3
             ;;
-           
 
-    esac
-}
 
 # Nginx管理函数
 manage_nginx() {
