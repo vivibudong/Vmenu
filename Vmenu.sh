@@ -361,7 +361,7 @@ get_docker_compose_cmd() {
 # 展示菜单头
 show_header() {
     echo -e "\n${RED}=============================================${NC}"
-    echo -e "${WHITE}              Vmenu❤   V0.64   ${NC}"
+    echo -e "${WHITE}              Vmenu❤   V0.70   ${NC}"
     echo -e "${RED}---------------------------------------------${NC}"
     echo -e " ${RED}● 博客地址:${NC} https://budongkeji.cc"
     echo -e " ${RED}● 脚本命令:${NC} bash <(curl -Ls s.v1v1.de/bash)"
