@@ -1569,13 +1569,11 @@ show_submenu_9() {
 process_submenu_9_choice() {
     local subchoice="$1"
     case $subchoice in
-    
         901)
             execute_shell_command "NodeQuality融合测试" \
                 "bash <(curl -sL https://run.NodeQuality.com)"
             wait_and_return show_submenu_9
             ;;
-            
         902)
             local pm=$(detect_package_manager)
             case $pm in
@@ -1597,13 +1595,11 @@ process_submenu_9_choice() {
             execute_command "运行网速测试" speedtest
             wait_and_return show_submenu_9
             ;;
-            
         903)
             execute_shell_command "YABS综合测试" \
                 "curl -sL yabs.sh | bash -s -- -i"
             wait_and_return show_submenu_9
             ;;
-            
         0)
             show_main_menu
             ;;
