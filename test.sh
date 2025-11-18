@@ -120,10 +120,10 @@ execute_command() {
     shift
     
     echo -e "\n${GREEN}开始执行: ${YELLOW}$description${NC}"
-    echo -e "${BORDER}---执行输出开始---${NC}"
+    echo -e "${BORDER}---Start---${NC}"
     
     if "$@"; then
-        echo -e "${BORDER}---执行输出结束---${NC}"
+        echo -e "${BORDER}---End---${NC}"
         echo -e "${GREEN}✓ 命令执行成功！${NC}"
         return 0
     else
