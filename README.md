@@ -18,7 +18,6 @@
 ```bash
 bash <(curl -Ls s.v1v1.de/bash)
 ```
-
 ---
 
 ### 预览
