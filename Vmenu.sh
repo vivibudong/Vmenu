@@ -1121,7 +1121,7 @@ process_submenu_3_choice() {
             wait_and_return show_submenu_3
             ;;
         0)
-            return 0
+            show_main_menu
             ;;
         *)
             echo -e "${RED}无效选项${NC}"
