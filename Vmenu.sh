@@ -473,7 +473,7 @@ process_submenu_1_choice() {
             
             # BBR配置
             execute_shell_command "配置BBR" \
-                "echo 'net.core.default_qdisc=fq' | tee -a /etc/sysctl.conf && echo 'net.ipv4.tcp_congestion_control=bbr' | tee -a /etc/sysctl.conf && sysctl -p"
+                "echo net.core.default_qdisc=fq | tee -a /etc/sysctl.conf && echo net.ipv4.tcp_congestion_control=bbr | tee -a /etc/sysctl.conf && sysctl -p
             
             # 时区配置
             execute_command "设置时区" timedatectl set-timezone Asia/Shanghai
@@ -599,7 +599,7 @@ EOF
 
         105)
             execute_shell_command "配置BBR" \
-                "echo 'net.core.default_qdisc=fq' | tee -a /etc/sysctl.conf && echo 'net.ipv4.tcp_congestion_control=bbr' | tee -a /etc/sysctl.conf && sysctl -p"
+                "echo net.core.default_qdisc=fq | tee -a /etc/sysctl.conf && echo net.ipv4.tcp_congestion_control=bbr | tee -a /etc/sysctl.conf && sysctl -p"
             wait_and_return show_submenu_1
             ;;
             
