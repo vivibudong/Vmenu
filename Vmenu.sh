@@ -1216,9 +1216,13 @@ show_submenu_9() {
     echo -e "${RED}│${NC}"
     echo -e "${RED}│${NC}   ${GREEN}[901]${NC} ${WHITE}NodeQuality融合测试 *荐${NC}"
     echo -e "${RED}│${NC}"
-    echo -e "${RED}│${NC}   ${GREEN}[902]${NC} ${WHITE}网速测试-Speedtestcli${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[902]${NC} ${WHITE}网速测试-Speedtestcli【网速】${NC}"
     echo -e "${RED}│${NC}"
-    echo -e "${RED}│${NC}   ${GREEN}[903]${NC} ${WHITE}YABS测试${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[903]${NC} ${WHITE}YABS【基础信息/IO/网速等】${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[904]${NC} ${WHITE}Bench.sh【基础信息/IO/网速等】${NC}"
+    echo -e "${RED}│${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[905]${NC} ${WHITE}NagaSaki/SICK【硬件信息检测】${NC}"
     echo -e "${RED}│${NC}"
     echo -e "${RED}│${NC}   ${GREEN}[0]${NC} ${WHITE}返回主菜单${NC}"
     echo -e "${RED}│${NC}"
@@ -1263,7 +1267,17 @@ process_submenu_9_choice() {
             ;;
         903)
             execute_shell_command "YABS综合测试" \
-                "curl -sL yabs.sh | bash -s -- -i"
+                "wget -qO- yabs.sh | bash -s -- -g"
+            wait_and_return show_submenu_9
+            ;;
+        904)
+            execute_shell_command "Bench.sh测试" \
+                "wget -qO- bench.sh | bash"
+            wait_and_return show_submenu_9
+            ;;
+        905)
+            execute_shell_command "独服硬件信息监测NagaSaki/SICK" \
+                "curl -sL https://sick.onl | bash -s -- -cn"
             wait_and_return show_submenu_9
             ;;
         0)
