@@ -1216,7 +1216,7 @@ show_submenu_9() {
     echo -e "${RED}│${NC}"
     echo -e "${RED}│${NC}   ${GREEN}[901]${NC} ${WHITE}NodeQuality融合测试 *荐${NC}"
     echo -e "${RED}│${NC}"
-    echo -e "${RED}│${NC}   ${GREEN}[902]${NC} ${WHITE}网速测试-Speedtestcli【网速】${NC}"
+    echo -e "${RED}│${NC}   ${GREEN}[902]${NC} ${WHITE}Speedtestcli【网速测试】${NC}"
     echo -e "${RED}│${NC}"
     echo -e "${RED}│${NC}   ${GREEN}[903]${NC} ${WHITE}YABS【基础信息/IO/网速等】${NC}"
     echo -e "${RED}│${NC}"
