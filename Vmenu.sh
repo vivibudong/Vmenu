@@ -128,7 +128,7 @@ execute_command() {
         return 0
     else
         local status=$?
-        echo -e "${BORDER}---执行输出结束---${NC}"
+        echo -e "${BORDER}---End---${NC}"
         echo -e "${RED}✗ 命令执行失败，错误代码: $status${NC}"
         return $status
     fi
@@ -140,15 +140,15 @@ execute_shell_command() {
     local cmd="$2"
     
     echo -e "\n${GREEN}开始执行: ${YELLOW}$description${NC}"
-    echo -e "${BORDER}---执行输出开始---${NC}"
+    echo -e "${BORDER}---Start---${NC}"
     
     if bash -c "$cmd"; then
-        echo -e "${BORDER}---执行输出结束---${NC}"
+        echo -e "${BORDER}---End---${NC}"
         echo -e "${GREEN}✓ 命令执行成功！${NC}"
         return 0
     else
         local status=$?
-        echo -e "${BORDER}---执行输出结束---${NC}"
+        echo -e "${BORDER}---End---${NC}"
         echo -e "${RED}✗ 命令执行失败，错误代码: $status${NC}"
         return $status
     fi
@@ -604,6 +604,9 @@ EOF
             ;;
             
         106)
+            update_system
+            install_package wget
+            install_package curl
             local swap_size
             safe_read "请设置虚拟内存大小(单位: MiB):" "" swap_size
             
