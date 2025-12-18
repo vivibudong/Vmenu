@@ -830,7 +830,7 @@ EOF
             echo -e "${GREEN}查询默认密码：more /root/docker/vertex/data/password${NC}"
             echo -e "\n${GREEN}最新版Qbit安装完成！${NC}"
             echo -e "${GREEN}访问地址: http://$SERVER_IP:8080${NC}"
-            echo -e "${GREEN}默认账户：admin | 默认密码：adminadmin${NC}"
+            echo -e "${GREEN}默认账户：admin | 查询默认密码：journalctl -u qbittorrent${NC}"
             echo -e "${GREEN}================================${NC}"
             
             wait_and_return show_submenu_2
