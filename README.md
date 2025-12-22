@@ -80,3 +80,7 @@ his project is licensed under the [MIT License](LICENSE), allowing free use, mod
 For issues or suggestions, open an issue on GitHub or reach out via email: budongkejivivi@gmail.com
 
 <div align="center"> <strong>Made with ❤️ by <a href="https://github.com/vivibudong">Vivi不懂</a></strong> </div>
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=vivibudong/Vmenu&type=date&legend=top-left)](https://www.star-history.com/#vivibudong/Vmenu&type=date&legend=top-left)
